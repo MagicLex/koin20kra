@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>₭OIN20KRA - Stablekoin de la Republike</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a0000;
+            color: #ffd700;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Pixel stars */
+        .star {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            image-rendering: pixelated;
+            opacity: 0;
+            animation: starFloat linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: 0;
+            width: 4px; height: 4px;
+            background: inherit;
+        }
+
+        .star::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -2px;
+            width: 4px; height: 4px;
+            background: inherit;
+        }
+
+        @keyframes starFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-20px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Layout */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 160px;
+            height: auto;
+            margin-bottom: 20px;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 28px;
+            color: #ff2020;
+            text-shadow: 2px 2px 0 #8b0000, 0 0 20px rgba(255, 32, 32, 0.4);
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #cc9900;
+            font-style: italic;
+        }
+
+        /* Ticker */
+        .ticker {
+            background: #2a0000;
+            border: 1px solid #4a0000;
+            padding: 12px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .ticker-item { text-align: center; }
+
+        .ticker-label {
+            color: #996600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .ticker-value {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .ticker-value.negative { color: #ff4444; }
+
+        /* TVL */
+        .tvl {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: radial-gradient(ellipse at center, #2a0000 0%, #1a0000 70%);
+            border: 1px solid #4a0000;
+        }
+
+        .tvl-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #996600;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .tvl-value {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 36px;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .tvl-unit {
+            font-size: 16px;
+            color: #cc9900;
+        }
+
+        /* Table */
+        .section-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #ff2020;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th {
+            background: #3a0000;
+            color: #cc9900;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid #ffd700;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2a0000;
+            font-size: 14px;
+        }
+
+        tr:hover { background: #2a0000; }
+
+        .proof-proven {
+            color: #44ff44;
+            text-shadow: 0 0 8px rgba(68, 255, 68, 0.4);
+        }
+
+        .proof-pending {
+            color: #ff8844;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Pool */
+        .pool {
+            background: #2a0000;
+            border: 1px solid #4a0000;
+            padding: 24px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .pool-bar-bg {
+            width: 100%;
+            height: 24px;
+            background: #1a0000;
+            border: 1px solid #4a0000;
+            margin: 16px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pool-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #ff2020, #ffd700);
+            transition: width 1s ease;
+            image-rendering: pixelated;
+        }
+
+        .pool-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .pool-stat-label { color: #996600; }
+        .pool-stat-value { color: #ffd700; margin-top: 4px; }
+
+        /* Proof of Kramaraderie */
+        .pok {
+            border: 1px solid #4a0000;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .pok p {
+            color: #cc9900;
+            font-size: 13px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .pok strong { color: #ffd700; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid #2a0000;
+            font-size: 10px;
+            color: #663300;
+            line-height: 2;
+        }
+
+        .footer a { color: #996600; text-decoration: none; }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #996600;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="assets/0_1.png" alt="₭OIN" class="logo">
+            <h1>₭OIN20KRA</h1>
+            <div class="subtitle">Stablekoin* de la Republike — pegged au Franc Kra</div>
+        </header>
+
+        <div class="ticker">
+            <div class="ticker-item">
+                <div class="ticker-label">₭OIN / FK</div>
+                <div class="ticker-value">1.00</div>
+            </div>
+            <div class="ticker-item">
+                <div class="ticker-label">24h</div>
+                <div class="ticker-value negative">-0.00%</div>
+            </div>
+            <div class="ticker-item">
+                <div class="ticker-label">Stabilité</div>
+                <div class="ticker-value">ABSOLUE*</div>
+            </div>
+            <div class="ticker-item">
+                <div class="ticker-label">Décentralisation</div>
+                <div class="ticker-value">OUI**</div>
+            </div>
+        </div>
+
+        <div class="tvl">
+            <div class="tvl-label">TOTAL VALUE LOCKED</div>
+            <div class="tvl-value" id="tvl">...</div>
+        </div>
+
+        <!-- Pool -->
+        <div class="section-title">⬥ POOL COLLECTIF</div>
+        <div class="pool">
+            <div class="pool-bar-bg">
+                <div class="pool-bar-fill" id="pool-bar" style="width: 0%"></div>
+            </div>
+            <div class="pool-stats">
+                <div>
+                    <div class="pool-stat-label">Kramarades</div>
+                    <div class="pool-stat-value" id="pool-holders">-</div>
+                </div>
+                <div>
+                    <div class="pool-stat-label">Pool Total</div>
+                    <div class="pool-stat-value" id="pool-total">-</div>
+                </div>
+                <div>
+                    <div class="pool-stat-label">Objectif</div>
+                    <div class="pool-stat-value">50,000 ₭</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Holders -->
+        <div class="section-title">⬥ DÉTENTEURS</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kramarade</th>
+                    <th>₭OIN</th>
+                    <th>Date</th>
+                    <th>Proof</th>
+                </tr>
+            </thead>
+            <tbody id="holders">
+                <tr><td colspan="4" class="loading">Connexion au réseau décentralisé*...</td></tr>
+            </tbody>
+        </table>
+
+        <!-- Proof of Kramaraderie -->
+        <div class="section-title">⬥ PROOF OF KRAMARADERIE</div>
+        <div class="pok">
+            <p>Le <strong>Proof of Kramaraderie</strong> est l'algorithme de consensus du ₭OIN. Plus vous ramenez de Kramarades dans le pool, plus votre statut augmente. C'est de la solidarité expansive.</p>
+            <p><strong>Pending</strong> — Kramarade enregistré, en attente de validation par le réseau (moi).</p>
+            <p><strong>Proven</strong> — Kramaraderie vérifiée. Rendements activés.</p>
+        </div>
+
+        <footer class="footer">
+            * stable au sens où ça ne monte jamais<br>
+            ** décentralisé chez Pygwenali, qui est à un endroit différent de chez vous<br>
+            <br>
+            ₭OIN20KRA — Une initiative de redistribution asymétrique<br>
+            <span style="color: #4a0000">- .-. . -. - . / .--. --- ..- .-. / .-.. . / .--. .- .-. - ..</span>
+        </footer>
+    </div>
+
+    <script>
+        // Pixel stars
+        function createStars() {
+            var count = 30;
+            for (var i = 0; i < count; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.animationDuration = (8 + Math.random() * 12) + 's';
+                star.style.animationDelay = (Math.random() * 15) + 's';
+                star.style.width = (2 + Math.random() * 4) + 'px';
+                star.style.height = star.style.width;
+                if (Math.random() > 0.7) star.style.background = '#ff2020';
+                document.body.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Google Sheet via Visualization API (JSONP, no CORS issues)
+        var SHEET_ID = '1VJW7o6FLceRbaX5B8NJXdo-5yImeqQjzvKG8MQ7EeIc';
+
+        function handleSheetData(response) {
+            if (response.status === 'error') {
+                document.getElementById('holders').innerHTML =
+                    '<tr><td colspan="4" class="loading">Réseau indisponible. Réessayez après la révolution.</td></tr>';
+                return;
+            }
+
+            var rows = response.table.rows;
+            var holders = [];
+            for (var i = 0; i < rows.length; i++) {
+                var c = rows[i].c;
+                if (c[0] && c[0].v) {
+                    holders.push({
+                        name: c[0].v,
+                        koin: (c[1] && c[1].v) ? parseInt(c[1].v) : 0,
+                        date: (c[2] && c[2].v) ? c[2].v : '',
+                        proof: (c[3] && c[3].v) ? c[3].v : 'Pending'
+                    });
+                }
+            }
+            render(holders);
+        }
+
+        function render(holders) {
+            var tbody = document.getElementById('holders');
+            var total = 0;
+
+            if (!holders.length) {
+                tbody.innerHTML = '<tr><td colspan="4" class="loading">Aucune donnée. Le réseau dort.</td></tr>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < holders.length; i++) {
+                var h = holders[i];
+                total += h.koin;
+                var proofClass = h.proof === 'Proven' ? 'proof-proven' : 'proof-pending';
+                html += '<tr>'
+                    + '<td>' + h.name + '</td>'
+                    + '<td>' + h.koin.toLocaleString('fr-FR') + ' ₭</td>'
+                    + '<td>' + h.date + '</td>'
+                    + '<td class="' + proofClass + '">' + h.proof + '</td>'
+                    + '</tr>';
+            }
+            tbody.innerHTML = html;
+
+            document.getElementById('tvl').innerHTML = total.toLocaleString('fr-FR') + ' <span class="tvl-unit">₭OIN</span>';
+            document.getElementById('pool-holders').textContent = holders.length;
+            document.getElementById('pool-total').textContent = total.toLocaleString('fr-FR') + ' ₭';
+
+            var pct = Math.min((total / 50000) * 100, 100);
+            document.getElementById('pool-bar').style.width = pct + '%';
+        }
+
+        var script = document.createElement('script');
+        script.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:handleSheetData';
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
