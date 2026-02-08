@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a0000;
+            color: #ffd700;
+            font-family: 'Share Tech Mono', monospace;
+            width: 480px;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .embed {
+            border: 1px solid #4a0000;
+            padding: 10px 16px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            background: radial-gradient(ellipse at center, #2a0000 0%, #1a0000 70%);
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #ff2020;
+            letter-spacing: 1px;
+        }
+
+        .crossed-k {
+            position: relative;
+            display: inline-block;
+            color: #ff2020;
+        }
+
+        .crossed-k::after {
+            content: '';
+            position: absolute;
+            left: -1px;
+            right: -1px;
+            top: 45%;
+            height: 2px;
+            background: #ffd700;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 11px;
+        }
+
+        .stat-label {
+            color: #996600;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: #ffd700;
+            font-size: 12px;
+        }
+
+        .tvl {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .tvl-unit {
+            font-size: 8px;
+            color: #cc9900;
+        }
+
+        .bar-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bar-bg {
+            flex: 1;
+            height: 10px;
+            background: #1a0000;
+            border: 1px solid #4a0000;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #ff2020, #ffd700);
+            transition: width 1s ease;
+            image-rendering: pixelated;
+        }
+
+        .pct {
+            font-size: 10px;
+            color: #cc9900;
+            min-width: 36px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="embed">
+        <div class="top">
+            <span class="title"><span class="crossed-k">K</span>OIN20KRA — POOL COLLECTIF</span>
+            <span class="tvl" id="tvl">...</span>
+        </div>
+        <div class="bar-wrap">
+            <div class="stats">
+                <div>
+                    <div class="stat-label">Kramarades</div>
+                    <div class="stat-value" id="holders">-</div>
+                </div>
+            </div>
+            <div class="bar-bg">
+                <div class="bar-fill" id="bar" style="width: 0%"></div>
+            </div>
+            <div class="pct" id="pct">0%</div>
+        </div>
+    </div>
+
+    <script>
+        var SHEET_ID = '1VJW7o6FLceRbaX5B8NJXdo-5yImeqQjzvKG8MQ7EeIc';
+
+        function handleEmbedData(response) {
+            if (response.status === 'error') return;
+
+            var rows = response.table.rows;
+            var total = 0;
+            var count = 0;
+
+            for (var i = 0; i < rows.length; i++) {
+                var c = rows[i].c;
+                if (c[0] && c[0].v) {
+                    total += (c[1] && c[1].v) ? parseInt(c[1].v) : 0;
+                    count++;
+                }
+            }
+
+            document.getElementById('tvl').innerHTML = total.toLocaleString('fr-FR') + ' <span class="tvl-unit"><span class="crossed-k">K</span></span>';
+            document.getElementById('holders').textContent = count;
+
+            var pct = Math.min((total / 50000) * 100, 100);
+            document.getElementById('bar').style.width = pct + '%';
+            document.getElementById('pct').textContent = pct.toFixed(1) + '%';
+        }
+
+        var script = document.createElement('script');
+        script.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=responseHandler:handleEmbedData';
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>
